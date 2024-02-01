@@ -39,5 +39,5 @@ class ViT(nn.Module):
     
 if __name__ == '__main__':
     sample_image_batch = torch.rand(5,3,500,500)
-    vit = ViT(image_size=500, patch_size=25)
+    vit = ViT(image_size=500, patch_size=50)
     print(vit(sample_image_batch).shape)
