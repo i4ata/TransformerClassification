@@ -1,3 +1,4 @@
+from typing import Any
 import lightning as L
 from lightning.pytorch.utilities.model_summary import ModelSummary
 
@@ -6,6 +7,8 @@ import torch.nn.functional as F
 import torch.nn as nn
 
 import torchmetrics
+
+from typing import Dict
 
 class ClassifierModel(L.LightningModule):
     
@@ -25,7 +28,7 @@ class ClassifierModel(L.LightningModule):
     def configure_optimizers(self) -> torch.optim.Optimizer:
         return torch.optim.Adam(params=self.model.parameters(), lr=self.learning_rate)
     
-    def training_step(self, batch, batch_idx) -> float:
+    def training_step(self, batch: tuple, batch_idx: int) -> float:
         X, y = batch
         y_pred = self(X)
         loss = F.cross_entropy(y_pred, y)
@@ -33,10 +36,16 @@ class ClassifierModel(L.LightningModule):
                       on_step=False, on_epoch=True)
         return loss
     
-    def validation_step(self, batch, batch_idx) -> float:
+    def validation_step(self, batch: tuple, batch_idx: int) -> float:
         X, y = batch
         y_pred = self(X)
         loss = F.cross_entropy(y_pred, y)
         self.log_dict({'Validation loss': loss, f'Validation F1 score': self.f1_score(y_pred, y)}, 
                       on_step=False, on_epoch=True)
         return loss
+
+    def predict_step(self, batch: tuple, batch_idx: int) -> Dict[str, torch.Tensor]:
+        X, y = batch
+        return {'original_images': X,
+                'y_pred': torch.softmax(self(X), dim=1),
+                'y_true': y}

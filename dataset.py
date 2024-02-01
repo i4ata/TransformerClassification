@@ -6,12 +6,19 @@ from torchvision import transforms
 import lightning as L
 
 import os
+from typing import Optional
+import random as rd
 
 # https://www.kaggle.com/datasets/marquis03/bean-leaf-lesions-classification/data
 # All images are [3, 500, 500]
 class ImageClassificationDataModule(L.LightningDataModule):
 
-    def __init__(self, data_dir: str = 'data/', batch_size: int = 10, num_workers: int = os.cpu_count()) -> None:
+    def __init__(self,
+                 train_transform: Optional[transforms.Compose] = None,
+                 val_transform: Optional[transforms.Compose] = None, 
+                 data_dir: str = 'data/', 
+                 batch_size: int = 10, 
+                 num_workers: int = os.cpu_count()) -> None:
         
         super().__init__()
 
@@ -19,12 +26,12 @@ class ImageClassificationDataModule(L.LightningDataModule):
         self.batch_size = batch_size
         self.num_workers = num_workers
 
-        self.train_transform = transforms.Compose([
+        self.train_transform = train_transform if train_transform is not None else transforms.Compose([
             transforms.TrivialAugmentWide(),
             transforms.ToTensor()
         ])
 
-        self.val_transform = transforms.Compose([
+        self.val_transform = val_transform if val_transform is not None else transforms.Compose([
             transforms.ToTensor()
         ])
 
@@ -43,13 +50,18 @@ class ImageClassificationDataModule(L.LightningDataModule):
 
 
     def setup(self, stage: str) -> None:
-
-        self.training_dataset = ImageFolder(root=self.data_dir + '/train/', transform=self.train_transform)
-        self.validation_dataset = ImageFolder(root=self.data_dir + '/val/', transform=self.val_transform)
+        if stage == 'fit':
+            self.training_dataset = ImageFolder(root=self.data_dir + '/train/', transform=self.train_transform)
+        self.validation_dataset = ImageFolder(root=self.data_dir + '/val/', transform=self.val_transform)    
 
     def train_dataloader(self) -> DataLoader:
         return DataLoader(dataset=self.training_dataset, batch_size=self.batch_size, num_workers=self.num_workers, shuffle=True)
 
     def val_dataloader(self) -> DataLoader:
         return DataLoader(dataset=self.validation_dataset, num_workers=self.num_workers, batch_size=self.batch_size)
-        
+    
+    def predict_dataloader(self) -> DataLoader:
+        k = 9
+        random_samples = rd.sample(range(len(self.validation_dataset)), k=k)
+        # Fix this with a random sampler
+        return DataLoader(dataset=self.validation_dataset[random_samples], num_workers=self.num_workers, batch_size=k)
