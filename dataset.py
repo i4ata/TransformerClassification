@@ -1,4 +1,4 @@
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 
 from torchvision.datasets import ImageFolder
 from torchvision import transforms
@@ -48,7 +48,6 @@ class ImageClassificationDataModule(L.LightningDataModule):
             os.system(f'rm {dataset_name}.zip')
             os.system(f'mv {dataset_name}/ {self.data_dir}/')
 
-
     def setup(self, stage: str) -> None:
         if stage == 'fit':
             self.training_dataset = ImageFolder(root=self.data_dir + '/train/', transform=self.train_transform)
@@ -61,7 +60,4 @@ class ImageClassificationDataModule(L.LightningDataModule):
         return DataLoader(dataset=self.validation_dataset, num_workers=self.num_workers, batch_size=self.batch_size)
     
     def predict_dataloader(self) -> DataLoader:
-        k = 9
-        random_samples = rd.sample(range(len(self.validation_dataset)), k=k)
-        # Fix this with a random sampler
-        return DataLoader(dataset=self.validation_dataset[random_samples], num_workers=self.num_workers, batch_size=k)
+        return DataLoader(dataset=self.validation_dataset, num_workers=self.num_workers, batch_size=self.batch_size)
