@@ -67,11 +67,11 @@ if __name__ == '__main__':
             transforms.TrivialAugmentWide(),
             transforms.ToTensor()
         ])
-        test_transform =  transforms.Compose([
+        val_transform = transforms.Compose([
             transforms.Resize((args.image_size, args.image_size)),
             transforms.ToTensor()
         ])
-        
+
     else:
         if args.image_size != 224:
             print(f'Image size {args.image_size} passed but pretrained vit uses 224. Defaulting to 224')
