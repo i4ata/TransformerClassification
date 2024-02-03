@@ -1,4 +1,3 @@
-from typing import Any
 import lightning as L
 from lightning.pytorch.utilities.model_summary import ModelSummary
 
@@ -9,15 +8,13 @@ import torch.nn as nn
 import torchmetrics
 from torchvision import transforms
 
-from typing import Dict, Optional
-from collections import namedtuple
+from typing import Optional
 
 class ClassifierModel(L.LightningModule):
     
     def __init__(self, model: nn.Module, image_size: int = 500, learning_rate: float = 1e-3, num_classes: int = 3,
                  train_transform: Optional[transforms.Compose] = None, val_transform: Optional[transforms.Compose] = None) -> None:
         super().__init__()
-        self.save_hyperparameters(ignore=['model'])
         self.model = model
         self.learning_rate = learning_rate
         self.example_input_array = torch.Tensor(5, 3, image_size, image_size)
@@ -49,9 +46,4 @@ class ClassifierModel(L.LightningModule):
         self.log_dict({'Validation loss': loss, f'Validation F1 score': self.f1_score(y_pred, y)}, 
                       on_step=False, on_epoch=True)
         return loss
-
-    def predict_step(self, batch: tuple, batch_idx: int) -> Dict[str, torch.Tensor]:
-        X, y = batch
-        return {'original_images': X,
-                'y_pred': torch.softmax(self(X), dim=1),
-                'y_true': y}
+    

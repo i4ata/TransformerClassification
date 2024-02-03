@@ -6,14 +6,14 @@ from model import ClassifierModel
 from dataset import ImageClassificationDataModule
 from custom_transformer.vit import ViT
 
-from torchvision import models
+from torchvision import models, transforms
 import torch.nn as nn
 import torch
 
 import argparse
 
 class ModelSaver(L.Callback):
-    def __init__(self, monitor='val_loss', save_dir: str = 'models', name: str = 'base_name'):
+    def __init__(self, monitor='Validation loss', save_dir: str = 'models', name: str = 'base_name'):
         super().__init__()
         self.monitor = monitor
         self.best_loss = float('inf')
@@ -61,7 +61,17 @@ if __name__ == '__main__':
                 mlp_size=args.mlp_size,
                 num_heads=args.num_msa_heads,
                 num_classes=num_classes)
-        train_transform, val_transform = None, None
+        
+        train_transform = transforms.Compose([
+            transforms.Resize((args.image_size, args.image_size)),
+            transforms.TrivialAugmentWide(),
+            transforms.ToTensor()
+        ])
+        test_transform =  transforms.Compose([
+            transforms.Resize((args.image_size, args.image_size)),
+            transforms.ToTensor()
+        ])
+        
     else:
         if args.image_size != 224:
             print(f'Image size {args.image_size} passed but pretrained vit uses 224. Defaulting to 224')
