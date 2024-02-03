@@ -7,17 +7,23 @@ import torch.nn.functional as F
 import torch.nn as nn
 
 import torchmetrics
+from torchvision import transforms
 
-from typing import Dict
+from typing import Dict, Optional
+from collections import namedtuple
 
 class ClassifierModel(L.LightningModule):
     
-    def __init__(self, model: nn.Module, image_size: int = 500, learning_rate: float = 1e-3, num_classes: int = 3) -> None:
+    def __init__(self, model: nn.Module, image_size: int = 500, learning_rate: float = 1e-3, num_classes: int = 3,
+                 train_transform: Optional[transforms.Compose] = None, val_transform: Optional[transforms.Compose] = None) -> None:
         super().__init__()
+        self.save_hyperparameters(ignore=['model'])
         self.model = model
         self.learning_rate = learning_rate
         self.example_input_array = torch.Tensor(5, 3, image_size, image_size)
         self.f1_score = torchmetrics.F1Score(task='multiclass', num_classes=num_classes)
+        self.train_transform = train_transform
+        self.val_transform = val_transform
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.model(x)

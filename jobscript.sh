@@ -10,4 +10,4 @@ module load Python/3.9.6-GCCcore-11.2.0
 
 source ~/env/bin/activate
 
-srun python train.py
+srun python train.py --name pretrained_vit --batch_size 32
