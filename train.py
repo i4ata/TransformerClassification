@@ -29,7 +29,7 @@ def parse_args():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--use_custom',             type=bool,  default=False,       help='Whether to use the custom implementation or the pretrained one')
+    parser.add_argument('--use_custom',             type=bool,  default=False,      help='Whether to use the custom implementation or the pretrained one')
     parser.add_argument('--image_size',             type=int,   default=500,        help='Input image dimensions')
     parser.add_argument('--patch_size',             type=int,   default=50,         help='Dimensions of image patches')
     parser.add_argument('--epochs',                 type=int,   default=10,         help='Number of epochs to train the model for')
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     args = parse_args()
     logger = TensorBoardLogger(save_dir='runs', name=args.name)
     num_classes = 3
-
+    
     if args.use_custom:
         vit = ViT(image_size=args.image_size,
                 in_channels=3, 
