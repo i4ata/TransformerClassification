@@ -43,8 +43,7 @@ if __name__ == '__main__':
         ax[i].set_title(true_label + '\n' + custom_vit_str + '\n' + pretrained_vit_str)
     
     plt.tight_layout()
-    plt.suptitle('Example predictions on 9 samples from the validation dataset')
-    plt.savefig('plot.png', dpi=200)
+    plt.savefig('example_predictions.png', dpi=200)
 
     
     
