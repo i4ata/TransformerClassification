@@ -54,13 +54,13 @@ if __name__ == '__main__':
     
     if args.use_custom:
         vit = ViT(image_size=args.image_size,
-                in_channels=3, 
-                patch_size=args.patch_size, 
-                num_transformer_layers=args.num_transformer_layers,
-                embedding_dim=args.embedding_dim,
-                mlp_size=args.mlp_size,
-                num_heads=args.num_msa_heads,
-                num_classes=num_classes)
+                  in_channels=3, 
+                  patch_size=args.patch_size, 
+                  num_transformer_layers=args.num_transformer_layers,
+                  embedding_dim=args.embedding_dim,
+                  mlp_size=args.mlp_size,
+                  num_heads=args.num_msa_heads,
+                  num_classes=num_classes)
         
         train_transform = transforms.Compose([
             transforms.Resize((args.image_size, args.image_size)),
@@ -95,5 +95,7 @@ if __name__ == '__main__':
     trainer = L.Trainer(accelerator='auto', devices='auto', 
                         max_epochs=args.epochs, callbacks=[early_stopper, model_saver], 
                         logger=logger, enable_checkpointing=False)
+    
     data_module = ImageClassificationDataModule(num_workers=7, batch_size=args.batch_size, train_transform=train_transform, val_transform=val_transform)
     trainer.fit(model=model, datamodule=data_module)
+    

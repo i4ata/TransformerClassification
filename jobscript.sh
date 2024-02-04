@@ -11,3 +11,4 @@ module load Python/3.9.6-GCCcore-11.2.0
 source ~/env/bin/activate
 
 srun python train.py --use_custom True --name my_vit
+# git push script: git add -- . ':!*.pth' # add all files except for .pth
