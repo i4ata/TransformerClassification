@@ -15,6 +15,4 @@ To visually see the predictions on some examples:
 
 `python evaluate.py`
 
-To launch a Gradio application:
-
-`python gradio_app.py`
+A Gradio application can be seen on HuggingFace Spaces [here](https://huggingface.co/spaces/i4ata/CustomTransformerClassification)
