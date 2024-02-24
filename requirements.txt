@@ -1,0 +1,7 @@
+torch
+torchvision
+torchmetrics
+lightning
+matplotlib
+gradio
+termcolor
