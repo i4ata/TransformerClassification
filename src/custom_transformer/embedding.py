@@ -70,4 +70,4 @@ if __name__ == '__main__':
     sample_image_batch = torch.rand(5,3,224,224)
     embedding = Embedding()
     out = embedding(sample_image_batch)
-    print(out)
+    print(out.shape)

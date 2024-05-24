@@ -16,7 +16,7 @@ class ViT(nn.Module):
                  num_heads: int = 12,
                  num_classes: int = 3) -> None:
         
-        super().__init__()
+        super(ViT, self).__init__()
 
         self.embedding = Embedding(image_size=image_size, in_channels=in_channels, embedding_dim=embedding_dim, patch_size=patch_size)
         self.transformer_encoders = nn.Sequential(

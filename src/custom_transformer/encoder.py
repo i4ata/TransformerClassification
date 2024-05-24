@@ -53,7 +53,7 @@ class MultiHeadSelfAttention(nn.Module):
 class MSABlock(nn.Module):
 
     def __init__(self, embedding_dim: int = 768, num_heads: int = 12) -> None:
-        super().__init__()
+        super(MSABlock, self).__init__()
         self.msa = MultiHeadSelfAttention(embedding_dim=embedding_dim, num_heads=num_heads)
         self.layer_norm = nn.LayerNorm(normalized_shape=embedding_dim)
     
@@ -64,7 +64,7 @@ class MSABlock(nn.Module):
 class MLPBlock(nn.Module):
 
     def __init__(self, embedding_dim: int = 768, hidden_size: int = 3072) -> None:
-        super().__init__()
+        super(MLPBlock, self).__init__()
         self.layer_norm = nn.LayerNorm(normalized_shape=embedding_dim)
         self.mlp = nn.Sequential(
             nn.Linear(in_features=embedding_dim, out_features=hidden_size),
@@ -79,7 +79,7 @@ class MLPBlock(nn.Module):
 class TransformerEncoderBlock(nn.Module):
     
     def __init__(self, embedding_dim: int = 768, hidden_size: int = 3072, num_heads: int = 12) -> None:
-        super().__init__()
+        super(TransformerEncoderBlock, self).__init__()
         self.msa = MSABlock(embedding_dim=embedding_dim, num_heads=num_heads)
         self.mlp = MLPBlock(embedding_dim=embedding_dim, hidden_size=hidden_size)
 

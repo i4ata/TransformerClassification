@@ -18,29 +18,27 @@ if __name__ == '__main__':
     true_classes = [filename.split('/')[2] for filename in samples]
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
     custom_vit: ViT = ViT().load_state_dict(torch.load('models/my_vit.pth', map_location=device))
-    custom_vit.eval()
+    custom_vit_trainer = Trainer(model=custom_vit, device=device, transform=model_transforms['custom']['val'])
 
     pretrained_vit: models.VisionTransformer = models.vit_b_16().load_state_dict(torch.load('models/pretrained_vit.pth', map_location=device))
-    pretrained_vit.eval()
-
-    with torch.inference_mode():
-        pretrained_vit_transformed_images = torch.stack(list(map(model_transforms['pretrained']['val'], val_images))).to(device)
-        pretrained_vit_preds = torch.softmax(pretrained_vit(pretrained_vit_transformed_images), dim=1).cpu()
-        
-        custom_vit_transformed_images = torch.stack(list(map(model_transforms['custom']['val'], val_images))).to(device)
-        custom_vit_preds = torch.softmax(custom_vit(custom_vit_transformed_images), dim=1).cpu()
+    pretrained_vit_trainer = Trainer(model=pretrained_vit, device=device, transform=model_transforms['pretrained']['val'])
 
     fig, ax = plt.subplots(3, 3, figsize=(20,20))
     ax = ax.flatten()
     for i in range(9):
         
         ax[i].imshow(val_images[i])
-        ax[i].set_axis_off()
+        ax[i].axis('off')
 
         true_label = f'True label: {true_classes[i]}'
-        custom_vit_str = f'Custom ViT: {classes[torch.argmax(custom_vit_preds[i])]}, Confidence: {torch.max(custom_vit_preds[i]):.3f}'
-        pretrained_vit_str = f'Pretrained ViT: {classes[torch.argmax(pretrained_vit_preds[i])]}, Confidence: {torch.max(pretrained_vit_preds[i]):.3f}'
+
+        custom_label, custom_confidence = custom_vit_trainer.predict(val_image_filenames[i])
+        pretrained_label, pretrained_confidence = pretrained_vit_trainer.predict(val_image_filenames[i])
+        
+        custom_vit_str = f'Custom ViT: {custom_label}, Confidence: {custom_confidence:.3f}'
+        pretrained_vit_str = f'Pretrained ViT: {pretrained_label}, Confidence: {pretrained_confidence:.3f}'
         ax[i].set_title(true_label + '\n' + custom_vit_str + '\n' + pretrained_vit_str)
     
     plt.tight_layout()
