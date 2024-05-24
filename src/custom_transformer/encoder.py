@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn 
+import math
 
 DEBUG = False
 
@@ -7,7 +8,7 @@ class MultiHeadSelfAttention(nn.Module):
     
     def __init__(self, embedding_dim: int = 768, num_heads: int = 12) -> None:
         
-        super().__init__()
+        super(MultiHeadSelfAttention, self).__init__()
         
         self.num_heads = num_heads
         self.head_dim = embedding_dim // num_heads
@@ -28,7 +29,7 @@ class MultiHeadSelfAttention(nn.Module):
         q, k, v = q.transpose(1, 2), k.transpose(1, 2), v.transpose(1, 2)
         if DEBUG: print(f'Swap patches and head to have the head come first: {q.shape} [batch_size, num_heads, n_patches, head_dim]')
 
-        attention_scores = torch.matmul(q, k.mT) / (self.head_dim ** .5)
+        attention_scores = torch.matmul(q, k.mT) / math.sqrt(self.head_dim)
         if DEBUG: print(f'Compute attention scores for each head (scaled dot product): {attention_scores.shape} [batch_size, num_heads, n_patches, n_patches]')
 
         attention_weights = torch.softmax(attention_scores, dim=-1)
@@ -42,7 +43,6 @@ class MultiHeadSelfAttention(nn.Module):
 
         weighted_sum = weighted_sum.view(*weighted_sum.shape[:-2], -1)
         if DEBUG: print(f'Recover the original dimensions by merging the last 2: {weighted_sum.shape} [batch_size, n_patches, embedding_dim]')
-
 
         output = self.out_w(weighted_sum)
         if DEBUG: print(f'(Output) Linear projection of the weighted sum: {output.shape} [batch_size, num_heads, n_patches, embedding_dim]')

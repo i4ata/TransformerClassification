@@ -1,10 +1,6 @@
 import torch
 import torch.nn as nn
-
 import math
-
-# Use that for fancy colored prints
-from termcolor import colored
 
 DEBUG = False
 
@@ -12,13 +8,8 @@ class PatchEmbedding(nn.Module):
 
     def __init__(self, in_channels: int = 3, embedding_dim: int = 768, patch_size: int = 16) -> None:
         
-        super().__init__()
-
-        # Linear projection:
+        super(PatchEmbedding, self).__init__()
         self.linear_projection = nn.Conv2d(in_channels=in_channels, out_channels=embedding_dim, kernel_size=patch_size, stride=patch_size)
-        
-        # Flattening:
-        self.flatten = nn.Flatten(start_dim=2)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
 
@@ -30,7 +21,7 @@ class PatchEmbedding(nn.Module):
         if DEBUG: print(f'Linearly projected input: {x.shape} [batch_size, embedding_dim, sqrt(n_patches), sqrt(n_patches)]')
 
         # Flattening: [batch_size, embedding_dim, n_patches]
-        x = self.flatten(x)
+        x = x.flatten(start_dim=2)
         if DEBUG: print(f'Flattening of last 2 dimensions of linear projection: {x.shape} [batch_size, embedding_dim, n_patches]')
 
         # Transpose last 2 dimensions: [batch_size, n_patches, embedding_dim]
@@ -43,9 +34,9 @@ class Embedding(nn.Module):
 
     def __init__(self, image_size: int = 224, in_channels: int = 3, embedding_dim: int = 768, patch_size: int = 16) -> None:
         
-        super().__init__()
+        super(Embedding, self).__init__()
 
-        assert (image_size * image_size) % (patch_size * patch_size) == 0
+        assert image_size % patch_size == 0
 
         self.n_patches = (image_size * image_size) // (patch_size * patch_size)
         if DEBUG: print(f'Total number of patches: {self.n_patches}, i.e. {int(math.sqrt(self.n_patches))} x {int(math.sqrt(self.n_patches))}')

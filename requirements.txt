@@ -1,7 +1,4 @@
 torch
 torchvision
 torchmetrics
-lightning
 matplotlib
-termcolor
-# gradio

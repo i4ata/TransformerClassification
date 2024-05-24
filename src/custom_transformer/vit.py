@@ -1,10 +1,8 @@
 import torch
 import torch.nn as nn
 
-import sys
-sys.path.append('..')
-from custom_transformer.embedding import Embedding
-from custom_transformer.encoder import TransformerEncoderBlock
+from src.custom_transformer.embedding import Embedding
+from src.custom_transformer.encoder import TransformerEncoderBlock
 
 class ViT(nn.Module):
 

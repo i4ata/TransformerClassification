@@ -1,11 +1,13 @@
 import torch
-
-from model import ClassifierModel
-
+from torchvision import models
 from glob import glob
 import random as rd
 from PIL import Image
 import matplotlib.pyplot as plt
+
+from src.train import Trainer
+from src.custom_transformer.vit import ViT
+from src.transforms import model_transforms
 
 if __name__ == '__main__':
 
@@ -13,21 +15,20 @@ if __name__ == '__main__':
     samples = rd.sample(val_image_filenames, k=9)
     val_images = list(map(Image.open, samples))
     classes = [line.strip() for line in open('data/classname.txt').readlines()]
-    
     true_classes = [filename.split('/')[2] for filename in samples]
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    custom_vit: ClassifierModel = torch.load('models/my_vit.pth', map_location=device)
+    custom_vit: ViT = ViT().load_state_dict(torch.load('models/my_vit.pth', map_location=device))
     custom_vit.eval()
 
-    pretrained_vit: ClassifierModel = torch.load('models/pretrained_vit.pth', map_location=device)
+    pretrained_vit: models.VisionTransformer = models.vit_b_16().load_state_dict(torch.load('models/pretrained_vit.pth', map_location=device))
     pretrained_vit.eval()
 
     with torch.inference_mode():
-        pretrained_vit_transformed_images = torch.stack(list(map(pretrained_vit.val_transform, val_images))).to(device)
+        pretrained_vit_transformed_images = torch.stack(list(map(model_transforms['pretrained']['val'], val_images))).to(device)
         pretrained_vit_preds = torch.softmax(pretrained_vit(pretrained_vit_transformed_images), dim=1).cpu()
         
-        custom_vit_transformed_images = torch.stack(list(map(custom_vit.val_transform, val_images))).to(device)
+        custom_vit_transformed_images = torch.stack(list(map(model_transforms['custom']['val'], val_images))).to(device)
         custom_vit_preds = torch.softmax(custom_vit(custom_vit_transformed_images), dim=1).cpu()
 
     fig, ax = plt.subplots(3, 3, figsize=(20,20))
