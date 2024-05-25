@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 from torchvision import models
 from glob import glob
 import random as rd
@@ -19,10 +20,13 @@ if __name__ == '__main__':
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    custom_vit: ViT = ViT().load_state_dict(torch.load('models/my_vit.pth', map_location=device))
+    custom_vit: ViT = ViT()
+    custom_vit.load_state_dict(torch.load('models/my_vit.pt', map_location=device))
     custom_vit_trainer = Trainer(model=custom_vit, device=device, transform=model_transforms['custom']['val'])
 
-    pretrained_vit: models.VisionTransformer = models.vit_b_16().load_state_dict(torch.load('models/pretrained_vit.pth', map_location=device))
+    pretrained_vit: models.VisionTransformer = models.vit_b_16()
+    pretrained_vit.heads = nn.Linear(768, 3)
+    pretrained_vit.load_state_dict(torch.load('models/pretrained_vit.pt', map_location=device))
     pretrained_vit_trainer = Trainer(model=pretrained_vit, device=device, transform=model_transforms['pretrained']['val'])
 
     fig, ax = plt.subplots(3, 3, figsize=(20,20))
@@ -34,8 +38,8 @@ if __name__ == '__main__':
 
         true_label = f'True label: {true_classes[i]}'
 
-        custom_label, custom_confidence = custom_vit_trainer.predict(val_image_filenames[i])
-        pretrained_label, pretrained_confidence = pretrained_vit_trainer.predict(val_image_filenames[i])
+        custom_label, custom_confidence = custom_vit_trainer.predict(samples[i])
+        pretrained_label, pretrained_confidence = pretrained_vit_trainer.predict(samples[i])
         
         custom_vit_str = f'Custom ViT: {custom_label}, Confidence: {custom_confidence:.3f}'
         pretrained_vit_str = f'Pretrained ViT: {pretrained_label}, Confidence: {pretrained_confidence:.3f}'

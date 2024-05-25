@@ -5,7 +5,7 @@ Unfortunately, the models are too big so they are not in github. The results can
 
 To train:
 
-`python train.py`
+`python -m src.train`
 
 To visualize training:
 
@@ -13,6 +13,6 @@ To visualize training:
 
 To visually see the predictions on some examples:
 
-`python evaluate.py`
+`python -m src.evaluate`
 
 A Gradio application can be seen on HuggingFace Spaces [here](https://huggingface.co/spaces/i4ata/CustomTransformerClassification)

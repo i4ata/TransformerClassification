@@ -97,7 +97,7 @@ def parse_args():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--model',          type=str,   default='custom',        help='Whether to use the custom implementation or the pretrained one')
-    parser.add_argument('--epochs',         type=int,   default=10,              help='Number of epochs to train the model for')
+    parser.add_argument('--epochs',         type=int,   default=20,              help='Number of epochs to train the model for')
     parser.add_argument('--learning_rate',  type=float, default=1e-3,            help='Model learning rate')
     parser.add_argument('--name',           type=str,   default='default_name',  help='Experiment name')
     parser.add_argument('--batch_size',     type=int,   default=16,              help='Dataloader batch size')
