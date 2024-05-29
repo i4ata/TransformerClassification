@@ -1,6 +1,4 @@
 import torch
-import torch.nn as nn
-from torchvision import models
 from glob import glob
 import random as rd
 from PIL import Image
@@ -8,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from src.train import Trainer
 from src.custom_transformer.vit import ViT
-from src.transforms import model_transforms
+from utils import model_transforms, get_pretrained_vit
 
 if __name__ == '__main__':
 
@@ -24,8 +22,7 @@ if __name__ == '__main__':
     custom_vit.load_state_dict(torch.load('models/my_vit.pt', map_location=device))
     custom_vit_trainer = Trainer(model=custom_vit, device=device, transform=model_transforms['custom']['val'])
 
-    pretrained_vit: models.VisionTransformer = models.vit_b_16()
-    pretrained_vit.heads = nn.Linear(768, 3)
+    pretrained_vit = get_pretrained_vit()
     pretrained_vit.load_state_dict(torch.load('models/pretrained_vit.pt', map_location=device))
     pretrained_vit_trainer = Trainer(model=pretrained_vit, device=device, transform=model_transforms['pretrained']['val'])
 

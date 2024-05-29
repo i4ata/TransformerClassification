@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import Adam
-from torchvision import models, transforms
+from torchvision import transforms
 from torchmetrics.functional.classification import multiclass_accuracy
 from torchinfo import summary
 from torch.utils.tensorboard.writer import SummaryWriter
@@ -13,7 +13,7 @@ import argparse
 
 from src.early_stopper import EarlyStopper
 from src.dataset import LeavesData
-from src.transforms import model_transforms
+from utils import model_transforms, get_pretrained_vit
 from src.custom_transformer.vit import ViT
 
 class Trainer:
@@ -111,9 +111,7 @@ if __name__ == '__main__':
         model = ViT()
         augmentations = model_transforms['custom']
     else:
-        model = models.vit_b_16(weights='DEFAULT')
-        for parameter in model.parameters(): parameter.requires_grad = False
-        model.heads = nn.Linear(in_features=768, out_features=3)
+        model = get_pretrained_vit()
         augmentations = model_transforms['pretrained']
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'

@@ -1,3 +1,4 @@
+import torch.nn as nn
 from torchvision import transforms, models
 from typing import Literal, Dict
 
@@ -20,3 +21,9 @@ model_transforms: Dict[Literal['custom', 'pretrained'], Dict[Literal['train', 'v
         'val': _weights.transforms()
     }
 }
+
+def get_pretrained_vit() -> models.VisionTransformer:
+    model = models.vit_b_16(weights='DEFAULT')
+    for parameter in model.parameters(): parameter.requires_grad = False
+    model.heads = nn.Linear(in_features=768, out_features=3)
+    return model
