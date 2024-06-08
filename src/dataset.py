@@ -1,6 +1,5 @@
 from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
-from torchvision import transforms
 from typing import Tuple
 import os
 
@@ -21,17 +20,8 @@ class LeavesData:
             os.system(f'rm {dataset_name}.zip')
             os.system(f'mv {dataset_name}/ data/')
 
-        train_transform = transforms.Compose([
-            transforms.Resize((500, 500)),
-            transforms.TrivialAugmentWide(),
-            transforms.ToTensor()
-        ])
-        val_transform = transforms.Compose([
-            transforms.Resize((500, 500)),
-            transforms.ToTensor()
-        ])
-        self.training_dataset = ImageFolder(root='data/train/', transform=train_transform)
-        self.validation_dataset = ImageFolder(root='data/val/', transform=val_transform)
+        self.training_dataset = ImageFolder(root='data/train/')
+        self.validation_dataset = ImageFolder(root='data/val/')
         
     def get_dataloaders(self, batch_size: int = 10) -> Tuple[DataLoader, DataLoader]:
         training_dataloader = DataLoader(dataset=self.training_dataset, batch_size=batch_size, shuffle=True)
